@@ -1,0 +1,22 @@
+﻿namespace API_Condominio.Models;
+
+
+
+public class Resident
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Email { get; set; }
+    public string Phone { get; set; }
+    public Unit Unit { get; set; }
+    public string Image { get; set; }
+    public bool Responsible { get; set; }
+    public Sex Sex { get; set; }
+    public bool DisabledPerson { get; set; }
+    public bool Excluded { get; set; }
+    public DateTime ExclusionDate { get; set; }
+    public DateTime CreationDate { get; set; }
+    public string Observation { get; set; }
+    public bool Defaulter { get; set; }
+}
+
