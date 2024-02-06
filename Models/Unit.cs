@@ -8,6 +8,7 @@ public class Unit
     public List<Resident> Residents { get; set; }
     public bool PeopleLiving { get; set; }
     public string Observation { get; set; }
+    public bool HasGarage { get; set; }
 
 }
 

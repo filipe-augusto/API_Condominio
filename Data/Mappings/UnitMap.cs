@@ -25,8 +25,12 @@ namespace API_Condominio.Data.Mappings;
                 .IsRequired()
                 .HasColumnName("PeopleLiving")
                 .HasDefaultValue(false);
+        builder.Property(x => x.HasGarage)
+            .IsRequired()
+            .HasColumnName("HasGarage")
+            .HasDefaultValue(false);
 
-            builder.Property(x => x.Observation)
+        builder.Property(x => x.Observation)
                  .IsRequired()
                  .HasColumnName("Observation").HasMaxLength(500);
 
