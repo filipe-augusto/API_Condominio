@@ -2,17 +2,14 @@
 
 namespace API_Condominio.ViewModel
 {
-    public class RegisterViewModel
+    public class LoginViewModel
     {
-        [Required(ErrorMessage = "O nome é obrigatorio")]
-        public string Name { get; set; }
-
         [Required(ErrorMessage = "O e-mail é obrigatorio")]
         [EmailAddress(ErrorMessage = "O e-mail é inválido")]
         public string Email { get; set; }
 
-        public int IdRole { get; set; }
+        [Required(ErrorMessage = "A senha é obrigatorio")]
+        public string Password { get; set; }
 
-        public string? Image { get; set; }
     }
 }

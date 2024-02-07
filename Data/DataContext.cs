@@ -13,6 +13,9 @@ public class DataContext : DbContext
     public DbSet<Resident> Residents { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Unit> Units { get; set; }
+    public DbSet<Role> Role { get; set; }
+
+    
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
