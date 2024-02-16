@@ -152,30 +152,7 @@ namespace API_Condominio.Controllers;
 
 
 
-    [Authorize(Roles = "admin")]
-    [HttpPost("v1/blocks/{id:int}")]
-    public async Task<IActionResult> DeleteAsync([FromServices] DataContext context, [FromRoute] int id)
-    {
-        try
-        {
-            var block = await context.Blocks.FirstOrDefaultAsync(x => x.Id ==id);
-            if (block == null)
-                return BadRequest(new ResultViewModel<string>("Conteúdo não encontrado"));
-
-            context.Blocks.Remove(block);
-            await context.SaveChangesAsync();
-
-            return Created($"v1/blocks/{block.Id}", block);
-        }
-        catch (DbUpdateException)
-        {
-            return StatusCode(500, "05x13 - Não foi possivel deletar a categoria");
-        }
-        catch
-        {
-            return StatusCode(500, "05x14 - falha interna no servidor");
-        }
-    }
+ 
 
   
 

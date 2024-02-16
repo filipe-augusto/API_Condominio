@@ -9,9 +9,11 @@ public class Resident
     public string Email { get; set; }
     public string Phone { get; set; }
     public Unit Unit { get; set; }
+    public int UnitId { get; set; }
     public string Image { get; set; }
     public bool Responsible { get; set; }
     public Sex Sex { get; set; }
+    public short SexId { get; set; }
     public bool DisabledPerson { get; set; }
     public bool Excluded { get; set; }
     public DateTime ExclusionDate { get; set; }
