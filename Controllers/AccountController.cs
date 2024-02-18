@@ -37,6 +37,9 @@ public class AccountController : Controller
     public IActionResult GetAdmin() => Ok(User.Identity.Name);
 
     [Authorize(Roles = "admin")]
+    //    "user": "admin@filipe.com",
+      //  "password": ")9uX%6A4B6{BYgyTRBDDzP7Dd"
+    //
     [HttpPost("v1/accounts/")]
     public async Task<IActionResult> Post(
     [FromBody] RegisterViewModel model,
