@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.IO.Compression;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -15,8 +16,20 @@ ConfigureAuthentication(builder);
 ConfigureMvc(builder);
 ConfigureService(builder);
 
+
+
+
 var app = builder.Build();
 LoadConfiguration(app);
+
+ app.UseSwagger();
+
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Condominio API V1");
+    c.RoutePrefix = string.Empty;
+});
+
 
 app.UseAuthentication();//1° who is
 app.UseAuthorization();//2° what can you do
@@ -86,4 +99,38 @@ void ConfigureService(WebApplicationBuilder builder)
         options.UseSqlServer(connectionString);
     });//AddDbContext para dbcontext
     builder.Services.AddTransient<TokenService>();
+
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen(c =>
+    {
+        c.SwaggerDoc("v1", new OpenApiInfo { Title = "Condominio API", Version = "v1" });
+
+        c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+        {
+            Name = "Authorization",
+            Type = SecuritySchemeType.ApiKey,
+            Scheme = "Bearer",
+            BearerFormat = "JWT",
+            In = ParameterLocation.Header,
+            Description = "JWT Authorization header using the Bearer scheme."
+
+        });
+        c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                          new OpenApiSecurityScheme
+                          {
+                              Reference = new OpenApiReference
+                              {
+                                  Type = ReferenceType.SecurityScheme,
+                                  Id = "Bearer"
+                              }
+                          },
+                         new string[] {}
+                    }
+                });
+    });
+
+
 }
+

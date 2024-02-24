@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using System.ComponentModel.DataAnnotations;
 namespace API_Condominio.Controllers;
-
-    [ApiController]
+[Authorize]
+[ApiController]
     public class ResidentsController : Controller
     {
     [HttpGet("v1/residents")]

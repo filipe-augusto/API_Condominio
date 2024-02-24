@@ -10,7 +10,8 @@ using Microsoft.Extensions.Caching.Memory;
 namespace API_Condominio.Controllers;
 
     [ApiController]
-    public class BlockController : Controller
+[Authorize]
+public class BlockController : Controller
     {
     [HttpGet("v1/blocks")]
     public async Task<IActionResult> GetAsyncCache(

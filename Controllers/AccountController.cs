@@ -14,15 +14,41 @@ namespace API_Condominio.Controllers;
 [ApiController]
 public class AccountController : Controller
 {
-    [AllowAnonymous]
-    [HttpPost("v1/login")] 
-    public IActionResult Login([FromServices] TokenService tokenService)
+
+
+    [HttpPost("v1/accounts/login")]
+    public async Task<IActionResult> Login(
+  [FromBody] LoginViewModel model,
+  [FromServices] DataContext context,
+  [FromServices] TokenService tokenService)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(new ResultViewModel<string>(ModelState.GetErrors()));
 
-        var token = tokenService.GenerateToken(null);
+        var user = await context
+            .Users
+            .AsNoTracking()
+            .Include(x => x.Roles)
+            .FirstOrDefaultAsync(x => x.Email == model.Email);
 
-        return Ok(token);
+        if (user == null)
+            return StatusCode(401, new ResultViewModel<string>("Usuário ou senha inválidos"));
+
+        if (!PasswordHasher.Verify(user.PasswordHash, model.Password))
+            return StatusCode(401, new ResultViewModel<string>("Usuário ou senha inválidos"));
+
+        try
+        {
+            var token = tokenService.GenerateToken(user);
+            return Ok(new ResultViewModel<string>(token, null));
+        }
+        catch
+        {
+            return StatusCode(500, new ResultViewModel<string>("05X04 - Falha interna no servidor"));
+        }
     }
+
+   
 
     [Authorize(Roles = "user")]
     [HttpGet("v1/user")]
@@ -189,36 +215,14 @@ public class AccountController : Controller
         }
     }
 
-    [HttpPost("v1/accounts/login")]
-    public async Task<IActionResult> Login(
-    [FromBody] LoginViewModel model,
-    [FromServices] DataContext context,
-    [FromServices] TokenService tokenService)
+    [AllowAnonymous]
+    [HttpPost("v1/login")]
+    public IActionResult Login([FromServices] TokenService tokenService)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(new ResultViewModel<string>(ModelState.GetErrors()));
 
-        var user = await context
-            .Users
-            .AsNoTracking()
-            .Include(x => x.Roles)
-            .FirstOrDefaultAsync(x => x.Email == model.Email);
+        var token = tokenService.GenerateToken(null);
 
-        if (user == null)
-            return StatusCode(401, new ResultViewModel<string>("Usuário ou senha inválidos"));
-
-        if (!PasswordHasher.Verify(user.PasswordHash, model.Password))
-            return StatusCode(401, new ResultViewModel<string>("Usuário ou senha inválidos"));
-
-        try
-        {
-            var token = tokenService.GenerateToken(user);
-            return Ok(new ResultViewModel<string>(token, null));
-        }
-        catch
-        {
-            return StatusCode(500, new ResultViewModel<string>("05X04 - Falha interna no servidor"));
-        }
+        return Ok(token);
     }
 
 }
