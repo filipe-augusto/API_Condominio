@@ -34,11 +34,8 @@ namespace API_Condominio.Controllers;
     }
     private List<Resident> GetResidents(DataContext context) => context.Residents.ToList();
 
-
-
-
     [Authorize(Roles = "admin")]
-        [HttpGet("v1/residents/")]
+        [HttpGet("v2/residents/")]
         public async Task<IActionResult> Get([FromServices] DataContext context)
         {
 
@@ -57,7 +54,6 @@ namespace API_Condominio.Controllers;
                 return StatusCode(500, "05x04 - Falha Interna no serivodor");
             }
         }
-
 
     [Authorize(Roles = "admin")]
     [HttpGet("v1/residents/{id:int}")]
@@ -82,8 +78,6 @@ namespace API_Condominio.Controllers;
         }
     }
 
-
-
     [Authorize(Roles ="admin")]
     [HttpPost("v1/residents/")]
     public async Task<IActionResult> Post([FromServices] DataContext context, [FromBody] ResidentViewModel model)
@@ -93,19 +87,24 @@ namespace API_Condominio.Controllers;
             if(!ModelState.IsValid)
                 return BadRequest(new ResultViewModel<string>(ModelState.GetErrors()));
 
+               var unit = context.Units.FirstOrDefault(x =>x.Id == model.UnitId);
+            if ( unit is null)
+                return StatusCode(400, new ResultViewModel<string>("05X97 - Unit does not exist"));
+
+            var sex = context.Sex.FirstOrDefault(x => x.Id == model.SexId);
+            if (sex is null)
+                return StatusCode(400, new ResultViewModel<string>("05X97 - Sex does not exist"));
+
             var resident = new Resident
             {
                 Name = model.Name,
                 Email = model.Email,
-                CreationDate = model.CreationDate,
                 Excluded = model.Excluded,
                 Defaulter = model.Defaulter,
                 Phone = model.Phone,
-                ExclusionDate = model.ExclusionDate,
                 SexId = model.SexId,
-                UnitId = model.UnitId,
+                Unit = unit,
                 Observation = model.Observation,
-                Image = model.Image ?? "",
                 DisabledPerson = model.DisabledPerson,
                 Responsible = model.Responsible
                 
@@ -120,7 +119,7 @@ namespace API_Condominio.Controllers;
                 Nome = model.Name,
                 Telefone = model.Phone,
                 Email = model.Email,
-                Sexo = resident.Sex.Name,
+             
                 Responsavel = model.Responsible,
                 
             }));
@@ -135,7 +134,6 @@ namespace API_Condominio.Controllers;
         }
     }
 
-
     [Authorize(Roles = "admin")]
     [HttpPut("v1/residents/{id:int}")]
     public async Task<IActionResult> Put([FromServices] DataContext context,
@@ -144,10 +142,19 @@ namespace API_Condominio.Controllers;
         try {
             if (!ModelState.IsValid)
                 return BadRequest(new ResultViewModel<string>(ModelState.GetErrors()));
+            var unit = await context.Units.FirstOrDefaultAsync(x => x.Id == model.UnitId);
+            if (unit is null)
+                return StatusCode(400, new ResultViewModel<string>("05X97 - Unit does not exist"));
+
+            var sex = await context.Sex.FirstOrDefaultAsync(x => x.Id == model.SexId);
+            if (sex is null)
+                return StatusCode(400, new ResultViewModel<string>("05X97 - Sex does not exist"));
 
             var resident = await context.Residents.FirstOrDefaultAsync(x => x.Id == id);
             if (resident == null)
                 return BadRequest(new ResultViewModel<Unit>(ModelState.GetErrors()));
+
+
             resident.Name = model.Name;
             resident.Phone = model.Phone;
             resident.Email = model.Email;
@@ -159,7 +166,7 @@ namespace API_Condominio.Controllers;
 
 
 
-            await context.Residents.AddAsync(resident);
+             context.Residents.Update(resident);
             await context.SaveChangesAsync();
 
             return Ok(new ResultViewModel<dynamic>(new
@@ -181,8 +188,6 @@ namespace API_Condominio.Controllers;
         }
     }
 
-
-
     [Authorize(Roles = "admin")]
     [HttpPost("v1/residents/{id:int}")]
     public async Task<IActionResult> DeleteAsync([FromServices] DataContext context, [FromRoute] int id)
@@ -195,7 +200,7 @@ namespace API_Condominio.Controllers;
 
             resident.Excluded = true;
             resident.ExclusionDate = DateTime.Now;
-            await context.Residents.AddAsync(resident);
+             context.Residents.Update(resident);
             await context.SaveChangesAsync();
 
             return Created($"v1/residents/{resident.Id}", resident);

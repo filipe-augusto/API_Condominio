@@ -35,7 +35,7 @@ public class UnitController : Controller
     private List<Unit> GetUnits(DataContext context) => context.Units.ToList();
 
     [Authorize(Roles = "admin")]
-    [HttpGet("v1/units/")]
+    [HttpGet("v2/units/")]
     public async Task<IActionResult> Get([FromServices] DataContext context)
     {
 
@@ -79,11 +79,14 @@ public class UnitController : Controller
 
             if (!ModelState.IsValid)
                 return BadRequest(new ResultViewModel<string>(ModelState.GetErrors()));
-
+            var block = context.Blocks.FirstOrDefault(x => x.Id == model.BlockId);
+            if (block is null)
+                return StatusCode(400, new ResultViewModel<string>("05X95 - Invalid unit"));
+            
             var unit = new Unit
             {
                 NumberUnit = model.NumberUnit,
-                BlockId = model.BlockId,
+                Block = block,
                 PeopleLiving = model.PeopleLiving,
                 Observation = model.Observation,
                 HasGarage = model.HasGarage
@@ -102,7 +105,7 @@ public class UnitController : Controller
         }
         catch (DbUpdateException)
         {
-            return StatusCode(400, new ResultViewModel<string>("05X99 - Este E-mail já está cadastrado"));
+            return StatusCode(400, new ResultViewModel<string>("05X99 - Erro para criar o bloco"));
         }
         catch
         {
@@ -131,7 +134,7 @@ public class UnitController : Controller
             unit.PeopleLiving = model.PeopleLiving;
             unit.NumberUnit = model.NumberUnit;
 
-            await  context.Units.AddAsync(unit);
+            context.Units.Update(unit);
             await context.SaveChangesAsync();
 
             return Ok(new ResultViewModel<dynamic>(new

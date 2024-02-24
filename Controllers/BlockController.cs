@@ -37,7 +37,7 @@ namespace API_Condominio.Controllers;
 
 
     [Authorize(Roles = "admin")]
-        [HttpGet("v1/blocks/")]
+        [HttpGet("v2/blocks/")]
         public async Task<IActionResult> Get([FromServices] DataContext context)
         {
 
@@ -77,7 +77,9 @@ namespace API_Condominio.Controllers;
 
     [Authorize(Roles ="admin")]
     [HttpPost("v1/blocks/")]
-    public async Task<IActionResult> Post([FromServices] DataContext context, [FromBody] BlockViewModel model)
+    public async Task<IActionResult> Post([FromBody] BlockViewModel model,
+        [FromServices] DataContext context
+      )
     {
         try
         {
@@ -129,7 +131,7 @@ namespace API_Condominio.Controllers;
             block.QuantityFloor = model.QuantityFloor;
             block.QuantityeUnit = model.QuantityeUnit;
 
-            await context.Blocks.AddAsync(block);
+            context.Blocks.Update(block);
             await context.SaveChangesAsync();
 
             return Ok(new ResultViewModel<dynamic>(new

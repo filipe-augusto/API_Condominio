@@ -1,4 +1,5 @@
-﻿namespace API_Condominio.Models;
+﻿
+namespace API_Condominio.Models;
 
 public class Unit
 {
@@ -9,7 +10,9 @@ public class Unit
     public bool PeopleLiving { get; set; }
     public string Observation { get; set; }
     public bool HasGarage { get; set; }
-    public int BlockId { get; set; }
+
+  
+    //public int BlockId { get; set; }
 
 }
 
