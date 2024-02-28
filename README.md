@@ -6,12 +6,12 @@ Um sistema para gerenciamento de condomínios, permitindo o cadastro de blocos, u
 
 1. Clone o repositório para o seu ambiente local:
 ``` 
-1. git clone https://github.com/seu-usuario/seu-projeto.git 
+ git clone https://github.com/seu-usuario/seu-projeto.git 
 ```
 
 2. Instale as dependências do projeto:
 ``` 
-1. dotnet add package microsoft.entityframeworkcore.sqlserver
+ dotnet add package microsoft.entityframeworkcore.sqlserver
 ```
 ``` 
 dotnet add package microsoft.entityframeworkcore.design
